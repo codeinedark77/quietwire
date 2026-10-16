@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quietwire"
+version = "0.2.0"
+description = "Passive ICS/OT protocol analyzer (Modbus/TCP, DNP3, S7comm, IEC 60870-5-104): asset inventory, policy baselining and detections. Receive-only; never transmits."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Yash Kandhare", email = "illuminati420777@gmail.com" }
+]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "coverage>=7"]
+
+[project.scripts]
+quietwire = "quietwire.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.coverage.run]
+branch = true
+source = ["quietwire"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false

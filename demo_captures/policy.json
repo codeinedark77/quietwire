@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "ip": "10.0.0.2"
+    },
+    {
+      "ip": "10.0.0.3"
+    },
+    {
+      "ip": "10.0.0.9"
+    },
+    {
+      "ip": "10.0.0.10"
+    },
+    {
+      "ip": "10.0.0.20"
+    },
+    {
+      "ip": "10.0.0.30"
+    }
+  ],
+  "allowed_flows": [
+    {
+      "master": "10.0.0.2",
+      "server": "10.0.0.10",
+      "protocol": "modbus",
+      "port": 502
+    },
+    {
+      "master": "10.0.0.3",
+      "server": "10.0.0.20",
+      "protocol": "dnp3",
+      "port": 20000
+    },
+    {
+      "master": "10.0.0.9",
+      "server": "10.0.0.30",
+      "protocol": "s7comm",
+      "port": 102
+    }
+  ],
+  "writers": {
+    "modbus": [
+      "10.0.0.2"
+    ],
+    "dnp3": [
+      "10.0.0.3"
+    ],
+    "s7comm": [
+      "10.0.0.9"
+    ]
+  },
+  "engineering_stations": [
+    "10.0.0.9"
+  ],
+  "allowed_functions": [
+    {
+      "master": "10.0.0.2",
+      "server": "10.0.0.10",
+      "protocol": "modbus",
+      "functions": [
+        "READ_HOLDING_REGISTERS",
+        "WRITE_SINGLE_REGISTER"
+      ]
+    },
+    {
+      "master": "10.0.0.3",
+      "server": "10.0.0.20",
+      "protocol": "dnp3",
+      "functions": [
+        "READ",
+        "DIRECT_OPERATE",
+        "@read"
+      ]
+    },
+    {
+      "master": "10.0.0.9",
+      "server": "10.0.0.30",
+      "protocol": "s7comm",
+      "functions": [
+        "READ_VAR",
+        "WRITE_VAR"
+      ]
+    }
+  ],
+  "write_ranges": [
+    {
+      "server": "10.0.0.10",
+      "protocol": "modbus",
+      "unit": 1,
+      "area": "holding_register",
+      "start": 100,
+      "end": 109
+    },
+    {
+      "server": "10.0.0.30",
+      "protocol": "s7comm",
+      "area": "DB1",
+      "start": 0,
+      "end": 99
+    },
+    {
+      "server": "10.0.0.20",
+      "protocol": "dnp3",
+      "area": "binary_output",
+      "start": 0,
+      "end": 7
+    }
+  ],
+  "thresholds": {
+    "warmup_seconds": 5
+  }
+}

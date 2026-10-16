@@ -1,0 +1,56 @@
+# quietwire live sensor: receive-only capture with a hardened, capability-restricted service account.
+#
+#   sudo useradd --system --no-create-home --shell /usr/sbin/nologin quietwire
+#   sudo install -d -o quietwire -g quietwire -m 0750 /var/lib/quietwire /etc/quietwire
+#   sudo install -m 0640 -o root -g quietwire policy.json /etc/quietwire/policy.json
+#   sudo install -m 0640 -o root -g quietwire audit.key  /etc/quietwire/audit.key   # see docs/DEPLOYMENT.md
+#   sudo cp deploy/quietwire.service /etc/systemd/system/ && sudo systemctl enable --now quietwire
+#
+# The sensor interface must be a SPAN/TAP port; set it in /etc/quietwire/quietwire.env (QW_IFACE=...).
+[Unit]
+Description=quietwire passive ICS/OT monitor
+Documentation=file:///usr/share/doc/quietwire/README.md
+After=network.target
+
+[Service]
+Type=simple
+User=quietwire
+Group=quietwire
+EnvironmentFile=/etc/quietwire/quietwire.env
+# CAP_NET_RAW is the only privilege needed (AF_PACKET receive); nothing is ever transmitted.
+AmbientCapabilities=CAP_NET_RAW
+CapabilityBoundingSet=CAP_NET_RAW
+NoNewPrivileges=yes
+ExecStart=/usr/bin/quietwire capture -i ${QW_IFACE} --policy /etc/quietwire/policy.json \
+    --audit-log /var/lib/quietwire/audit.jsonl --audit-key-file /etc/quietwire/audit.key \
+    --format json --out /var/lib/quietwire/last-report.json
+Restart=on-failure
+RestartSec=5
+# Hardening
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/var/lib/quietwire
+ReadOnlyPaths=/etc/quietwire
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+RestrictAddressFamilies=AF_PACKET AF_UNIX
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+UMask=0027
+MemoryMax=1G
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target
